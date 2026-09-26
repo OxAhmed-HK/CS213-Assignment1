@@ -25,6 +25,7 @@ void Grayscale(Image &image)
 
 // ==================== FILTER 2 ===================== //
 
+<<<<<<< HEAD
 void invertColors(Image &image)
 {
     for (int _x = 0; _x < image.width; _x++)
@@ -96,6 +97,8 @@ void Lighten(Image & Image)
         }
     }
 }
+=======
+>>>>>>> d3639eaa73f888ee1f3a1ee27dcf80b902dc520b
 int main()
 {
 
