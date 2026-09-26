@@ -3,7 +3,6 @@
 #include "Image_Class.h"
 
 using namespace std;
-
 //=======================Filter4======================//
 void Enter_Colors_Values(int &Red, int &Green, int &Blue)
 {
@@ -85,6 +84,57 @@ Image FrameFilter(Image &image)
     }
     return image2;
 }
+//=======================Filter8======================//
+void EnterNewSize(int &NewHeight, int &NewWidth)
+{
+    cout << "Enter new height: ";
+    cin >> NewHeight;
+    while (NewHeight <= 0)
+    {
+        cout << "Enter new height: ";
+        cin >> NewHeight;
+    }
+    cout << "Enter new width: ";
+    cin >> NewWidth;
+
+    while (NewWidth <= 0)
+    {
+        cout << "Enter new width: ";
+        cin >> NewWidth;
+    }
+}
+
+void Calculate_xRatio_yRatio(double &x, double &y, int &NewHeight, int &NewWidth, Image &image)
+{
+    x = double(image.width) / NewWidth;
+    y = double(image.height) / NewHeight;
+}
+void ReSizeImage(int &NewHeight, int &NewWidth, double &x, double &y, Image &image, Image &image2)
+{
+    for (int i = 0; i < NewWidth; i++)
+    {
+        for (int j = 0; j < NewHeight; j++)
+        {
+            image2.setPixel(i, j, 0, image.getPixel(i * x, j * y, 0));
+            image2.setPixel(i, j, 1, image.getPixel(i * x, j * y, 1));
+            image2.setPixel(i, j, 2, image.getPixel(i * x, j * y, 2));
+        }
+    }
+}
+
+Image ResizeFilter(Image &image)
+{
+    int NewWidth, NewHeight;
+    double x, y;
+
+    EnterNewSize(NewHeight, NewWidth);
+    Image image2(NewWidth, NewHeight);
+    Calculate_xRatio_yRatio(x, y, NewHeight, NewWidth, image);
+    ReSizeImage(NewHeight, NewWidth, x, y, image, image2);
+    return image2;
+}
+
+
 
 int main()
 {
