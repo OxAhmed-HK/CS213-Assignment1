@@ -1,45 +1,33 @@
 #include <iostream>
 #include "Image_Class.h"
-
 using namespace std;
-
-// ==================== FILTER 1 ===================== //
-void Grayscale(Image &image)
+//filter 2//
+void black_white(Image& image)
 {
-    for (int _x = 0; _x < image.width; _x++)
-    {
-        for (int _y = 0; _y < image.height; _y++)
-        {
-            int r = image(_x, _y, 0);
-            int g = image(_x, _y, 1);
-            int b = image(_x, _y, 2);
-
-            int gray = (r + g + b) / 3;
-
-            image(_x, _y, 0) = gray;
-            image(_x, _y, 1) = gray;
-            image(_x, _y, 2) = gray;
-        }
-    }
+	for (int x = 0; x < image.width; x++)
+	{
+		for (int y = 0; y < image.height; y++)
+		{
+			int average = ( image(x, y, 0) + image(x, y, 1) + image(x, y, 2) ) / 3;
+			if (average < 128)
+			{
+				for (int i = 0; i < 3; i++)
+				{
+					image(x, y, i) = 0;
+				}
+			}
+			else
+			{
+				for (int i = 0; i < 3; i++)
+				{
+					image(x, y, i) = 255;
+				}
+			}
+		}
+	}
 }
-
-// ==================== FILTER 2 ===================== //
-
-void invertColors(Image &image)
-{
-    for (int _x = 0; _x < image.width; _x++)
-    {
-        for (int _y = 0; _y < image.height; _y++)
-        {
-            image(_x, _y, 0) = 255 - image(_x, _y, 0);
-            image(_x, _y, 1) = 255 - image(_x, _y, 1);
-            image(_x, _y, 2) = 255 - image(_x, _y, 2);
-        }
-    }
-}
-
 int main()
 {
 
-    return 0;
+	
 }
