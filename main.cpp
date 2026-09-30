@@ -27,6 +27,133 @@ void Grayscale(Image &image)
 
 // ==================== FILTER 2 ===================== //
 
+void black_white(Image &image)
+{
+    for (int x = 0; x < image.width; x++)
+    {
+        for (int y = 0; y < image.height; y++)
+        {
+            int average = (image(x, y, 0) + image(x, y, 1) + image(x, y, 2)) / 3;
+            if (average < 128)
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    image(x, y, i) = 0;
+                }
+            }
+            else
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    image(x, y, i) = 255;
+                }
+            }
+        }
+    }
+}
+
+// ==================== FILTER 3 ===================== //
+
+void invert(Image &Image)
+{
+    for (int x = 0; x < Image.width; x++)
+    {
+        for (int y = 0; y < Image.height; y++)
+        {
+            int red = Image.getPixel(x, y, 0);
+            int green = Image.getPixel(x, y, 1);
+            int blue = Image.getPixel(x, y, 2);
+
+            Image.setPixel(x, y, 0, 255 - red);
+            Image.setPixel(x, y, 1, 255 - green);
+            Image.setPixel(x, y, 2, 255 - blue);
+        }
+    }
+}
+
+//=======================Filter4======================//
+void Enter_Colors_Values(int &Red, int &Green, int &Blue)
+{
+    cout << "Enter value of Red from 0 to 255 : ";
+    cin >> Red;
+    while (Red < 0 || Red > 255)
+    {
+        cout << "Enter value of Red from 0 to 255 : ";
+        cin >> Red;
+    }
+    cout << "\nEnter value of Green from 0 to 255 : ";
+    cin >> Green;
+    while (Green < 0 || Green > 255)
+    {
+        cout << "\nEnter value of Green from 0 to 255 : ";
+        cin >> Green;
+    }
+
+    cout << "\nEnter value of Blue from 0 to 255 : ";
+    cin >> Blue;
+    while (Blue < 0 || Blue > 255)
+    {
+        cout << "\nEnter value of Blue from 0 to 255 : ";
+        cin >> Blue;
+    }
+}
+
+int Enter_New_Thickness(int &Thickness)
+{
+    cout << "Enter the thickness of Frame : ";
+    cin >> Thickness;
+    while (Thickness <= 0 || Thickness > 500)
+    {
+        cout << "Enter the thickness of Frame : ";
+        cin >> Thickness;
+    }
+
+    return Thickness;
+}
+
+void Calculate_NewHeight_NewWidth(int &Thickness, int &NewHeight, int &NewWidth, Image &image)
+{
+    NewWidth = (image.width) + (2 * Thickness);
+    NewHeight = (image.height) + (2 * Thickness);
+}
+
+Image FrameFilter(Image &image)
+{
+    int NewWidth, NewHeight, Thickness;
+
+    Enter_New_Thickness(Thickness);
+
+    Calculate_NewHeight_NewWidth(Thickness, NewHeight, NewWidth, image);
+
+    Image image2(NewWidth, NewHeight);
+
+    int Red, Green, Blue;
+
+    Enter_Colors_Values(Red, Green, Blue);
+
+    for (int x = 0; x < image2.width; x++)
+    {
+        for (int y = 0; y < image2.height; y++)
+        {
+            if (x >= 0 && x < Thickness || x >= image2.width - Thickness && x < image2.width ||
+                y >= 0 && y < Thickness || y >= image2.height - Thickness && y < image2.height)
+            {
+                image2.setPixel(x, y, 0, Red);
+                image2.setPixel(x, y, 1, Green);
+                image2.setPixel(x, y, 2, Blue);
+            }
+            else
+            {
+                image2.setPixel(x, y, 0, image.getPixel(x - Thickness, y - Thickness, 0));
+                image2.setPixel(x, y, 1, image.getPixel(x - Thickness, y - Thickness, 1));
+                image2.setPixel(x, y, 2, image.getPixel(x - Thickness, y - Thickness, 2));
+            }
+        }
+    }
+    return image2;
+}
+
+// ==================== FILTER 5 ===================== //
 void Flip(Image &image, string direction)
 {
     int w = image.width;
@@ -81,30 +208,144 @@ void Flip(Image &image, string direction)
         }
     }
 }
-// ==================== FILTER 3 ===================== //
-void black_white(Image &image)
+
+// ==================== FILTER 6 ===================== //
+void rotate_image(Image &image, int angle)
 {
-    for (int x = 0; x < image.width; x++)
+    if (angle != 90 && angle != 180 && angle != 270)
     {
-        for (int y = 0; y < image.height; y++)
+        cout << "Invalid angle";
+        return;
+    }
+    if (angle == 90)
+    {
+        Image rotated_image(image.height, image.width);
+        for (int x = 0; x < image.width; x++)
         {
-            int average = (image(x, y, 0) + image(x, y, 1) + image(x, y, 2)) / 3;
-            if (average < 128)
+            for (int y = 0; y < image.height; y++)
             {
                 for (int i = 0; i < 3; i++)
                 {
-                    image(x, y, i) = 0;
-                }
-            }
-            else
-            {
-                for (int i = 0; i < 3; i++)
-                {
-                    image(x, y, i) = 255;
+                    rotated_image(image.height - 1 - y, x, i) = image(x, y, i);
                 }
             }
         }
+        image = rotated_image;
     }
+    else if (angle == 180)
+    {
+        Image rotated_image(image.width, image.height);
+        for (int x = 0; x < image.width; x++)
+        {
+            for (int y = 0; y < image.height; y++)
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    rotated_image(image.width - 1 - x, image.height - 1 - y, i) = image(x, y, i);
+                }
+            }
+        }
+        image = rotated_image;
+    }
+    else if (angle == 270)
+    {
+        Image rotated_image(image.height, image.width);
+        for (int x = 0; x < image.width; x++)
+        {
+            for (int y = 0; y < image.height; y++)
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    rotated_image(y, image.width - 1 - x, i) = image(x, y, i);
+                }
+            }
+        }
+        image = rotated_image;
+    }
+}
+
+// ==================== FILTER 7 ===================== //
+void Darken(Image &Image)
+{
+    for (int x = 0; x < Image.width; x++)
+    {
+        for (int y = 0; y < Image.height; y++)
+        {
+            for (int c = 0; c < 3; c++)
+            {
+                // Darkening the image by 50%
+                int pixelvalue = Image.getPixel(x, y, c);
+                pixelvalue = pixelvalue * 0.5;
+                Image.setPixel(x, y, c, pixelvalue);
+            }
+        }
+    }
+}
+void Lighten(Image &Image)
+{
+    for (int x = 0; x < Image.width; x++)
+    {
+        for (int y = 0; y < Image.height; y++)
+        {
+            for (int c = 0; c < 3; c++)
+            {
+                // Lightening the image by 50%
+                int pixelvalue = Image.getPixel(x, y, c);
+                pixelvalue = pixelvalue + ((255 - pixelvalue) * 0.5);
+                Image.setPixel(x, y, c, pixelvalue);
+            }
+        }
+    }
+}
+
+//=======================Filter8======================//
+void EnterNewSize(int &NewHeight, int &NewWidth)
+{
+    cout << "Enter new height: ";
+    cin >> NewHeight;
+    while (NewHeight <= 0)
+    {
+        cout << "Enter new height: ";
+        cin >> NewHeight;
+    }
+    cout << "Enter new width: ";
+    cin >> NewWidth;
+
+    while (NewWidth <= 0)
+    {
+        cout << "Enter new width: ";
+        cin >> NewWidth;
+    }
+}
+
+void Calculate_xRatio_yRatio(double &x, double &y, int &NewHeight, int &NewWidth, Image &image)
+{
+    x = double(image.width) / NewWidth;
+    y = double(image.height) / NewHeight;
+}
+void ReSizeImage(int &NewHeight, int &NewWidth, double &x, double &y, Image &image, Image &image2)
+{
+    for (int i = 0; i < NewWidth; i++)
+    {
+        for (int j = 0; j < NewHeight; j++)
+        {
+            image2.setPixel(i, j, 0, image.getPixel(i * x, j * y, 0));
+            image2.setPixel(i, j, 1, image.getPixel(i * x, j * y, 1));
+            image2.setPixel(i, j, 2, image.getPixel(i * x, j * y, 2));
+        }
+    }
+}
+
+Image ResizeFilter(Image &image)
+{
+    int NewWidth, NewHeight;
+    double x, y;
+
+    EnterNewSize(NewHeight, NewWidth);
+    Image image2(NewWidth, NewHeight);
+    Calculate_xRatio_yRatio(x, y, NewHeight, NewWidth, image);
+    ReSizeImage(NewHeight, NewWidth, x, y, image, image2);
+    return image2;
 }
 
 bool checkExtension(string filename)
@@ -167,31 +408,57 @@ bool fileExists(string filename)
 void menu(Image &image)
 {
     int choice;
+
     do
     {
         cout << "\n========== IMAGE PROCESSING MENU ==========\n";
+
         cout << "1. Grayscale\n";
-        cout << "2. Flip\n";
-        cout << "3. black_white\n";
-        cout << "4. [Teammate Filter 2]\n";
-        cout << "5. [Teammate Filter 3]\n";
-        cout << "6. [Teammate Filter 4]\n";
-        cout << "7. [Teammate Filter 5]\n";
-        cout << "8. [Teammate Filter 6]\n";
-        cout << "9. [Teammate Filter 7]\n";
-        cout << "10. Save Image\n";
-        cout << "11. Load New Image\n";
+        cout << "2. Black & White\n";
+        cout << "3. Invert\n";
+        cout << "4. Add Frame\n";
+        cout << "5. Flip\n";
+        cout << "6. Rotate\n";
+        cout << "7. Darken / Lighten\n";
+        cout << "8. Resize\n";
+        cout << "9. Save Image\n";
+        cout << "10. Load New Image\n";
         cout << "0. Exit\n";
 
         cout << "Enter your choice: ";
         cin >> choice;
+
+        // ==================== GRAYSCALE ==================== //
 
         if (choice == 1)
         {
             Grayscale(image);
         }
 
+        // ==================== BLACK & WHITE ==================== //
+
         else if (choice == 2)
+        {
+            black_white(image);
+        }
+
+        // ==================== INVERT ==================== //
+
+        else if (choice == 3)
+        {
+            invert(image);
+        }
+
+        // ==================== FRAME ==================== //
+
+        else if (choice == 4)
+        {
+            image = FrameFilter(image);
+        }
+
+        // ==================== FLIP ==================== //
+
+        else if (choice == 5)
         {
             int direction;
 
@@ -215,14 +482,73 @@ void menu(Image &image)
             }
         }
 
-        else if (choice == 3)
+        // ==================== ROTATE ==================== //
+
+        else if (choice == 6)
         {
-            black_white(image);
+            int angle;
+
+            cout << "\nChoose Rotation Angle:\n";
+            cout << "1. 90 degrees\n";
+            cout << "2. 180 degrees\n";
+            cout << "3. 270 degrees\n";
+            cout << "Enter your choice: ";
+            cin >> angle;
+
+            if (angle == 1)
+            {
+                rotate_image(image, 90);
+            }
+            else if (angle == 2)
+            {
+                rotate_image(image, 180);
+            }
+            else if (angle == 3)
+            {
+                rotate_image(image, 270);
+            }
+            else
+            {
+                cout << "Invalid angle.\n";
+            }
+        }
+
+        // ==================== DARKEN / LIGHTEN ==================== //
+
+        else if (choice == 7)
+        {
+            int option;
+
+            cout << "\nChoose an option:\n";
+            cout << "1. Darken\n";
+            cout << "2. Lighten\n";
+            cout << "Enter your choice: ";
+            cin >> option;
+
+            if (option == 1)
+            {
+                Darken(image);
+            }
+            else if (option == 2)
+            {
+                Lighten(image);
+            }
+            else
+            {
+                cout << "Invalid choice.\n";
+            }
+        }
+
+        // ==================== RESIZE ==================== //
+
+        else if (choice == 8)
+        {
+            image = ResizeFilter(image);
         }
 
         // ==================== SAVE ==================== //
 
-        else if (choice == 10)
+        else if (choice == 9)
         {
             string saveName;
 
@@ -239,8 +565,10 @@ void menu(Image &image)
                 cout << "Image saved successfully.\n";
             }
         }
+
         // ==================== LOAD NEW IMAGE ==================== //
-        else if (choice == 11)
+
+        else if (choice == 10)
         {
             char saveCurrent;
 
@@ -263,6 +591,7 @@ void menu(Image &image)
                 image.saveImage(saveName);
                 cout << "Current image saved successfully.\n";
             }
+
             string newFilename;
 
             cout << "Enter new image filename: ";
@@ -319,6 +648,7 @@ void menu(Image &image)
         {
             cout << "Invalid choice.\n";
         }
+
     } while (choice != 0);
 }
 
