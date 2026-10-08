@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <limits>
 #include "Image_Class.h"
 using namespace std;
 //=======================Filter4======================//
