@@ -253,7 +253,6 @@ void Infrared(Image &image)
         }
     }
 }
-
 int main()
 {
     return 0;
