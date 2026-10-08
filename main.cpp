@@ -181,16 +181,16 @@ void BlurImage(Image& image, Image& image2)
     cin >> level;
 
     while (level != 1 && level != 2 && level != 3)
+{
+    if (cin.fail())
     {
-        if (cin.fail())
-        {
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        }
-
-        cout << "Invalid Level! Enter Level Again: ";
-        cin >> level;
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
+
+    cout << "Invalid Level! Enter Level Again: ";
+    cin >> level;
+}
 
     if (level == 1)
     {
