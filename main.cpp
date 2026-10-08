@@ -205,9 +205,6 @@ void BlurImage(Image& image, Image& image2)
         Blur(image, image2, 12);
     }
 }
-
-
-
 int main()
 {
     return 0;
