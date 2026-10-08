@@ -134,6 +134,78 @@ Image ResizeFilter(Image &image)
     return image2;
 }
 
+/*===============Filter 12 Bluer ==================*/
+void Blur(Image& image, Image& image2, int radius)
+{
+    int size = 2 * radius + 1;// Calculate the size of the kernel
+    int totalPixels = size * size;// Calculate the total number of pixels in the kernel
+
+    for (int x = 0; x < image.width; x++)
+    {
+        for (int y = 0; y < image.height; y++)
+        {
+            int sumR = 0;
+            int sumG = 0;
+            int sumB = 0;
+
+            for (int k = x - radius; k <= x + radius; k++)
+            {
+                for (int l = y - radius; l <= y + radius; l++)
+                {
+                    int dk = (k + image.width) % image.width;
+                    int dl = (l + image.height) % image.height;
+
+                    sumR += image.getPixel(dk, dl, 0);
+                    sumG += image.getPixel(dk, dl, 1);
+                    sumB += image.getPixel(dk, dl, 2);
+                }
+            }
+
+            image2.setPixel(x, y, 0, sumR / totalPixels);
+            image2.setPixel(x, y, 1, sumG / totalPixels);
+            image2.setPixel(x, y, 2, sumB / totalPixels);
+        }
+    }
+}
+
+void BlurImage(Image& image, Image& image2)
+{
+    int level;
+
+    cout << "Choose Blur Level:" << endl;
+    cout << "1 - Weak" << endl;
+    cout << "2 - Medium" << endl;
+    cout << "3 - Strong" << endl;
+
+    cout << "Enter Level: ";
+    cin >> level;
+
+    while (level != 1 && level != 2 && level != 3)
+    {
+        if (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+
+        cout << "Invalid Level! Enter Level Again: ";
+        cin >> level;
+    }
+
+    if (level == 1)
+    {
+        Blur(image, image2, 5);
+    }
+    else if (level == 2)
+    {
+        Blur(image, image2, 7);
+    }
+    else
+    {
+        Blur(image, image2, 12);
+    }
+}
+
 
 
 int main()
