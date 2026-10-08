@@ -234,6 +234,26 @@ void BlurImage(Image& image, Image& image2)
         Blur(image, image2, 12);
     }
 }
+/*================ Filter 16 Infrared ============*/
+void Infrared(Image &image)
+{
+    for (int x = 0; x < image.width; x++)
+    {
+        for (int y = 0; y < image.height; y++)
+        {
+            int r = image.getPixel(x, y, 0);
+            int g = image.getPixel(x, y, 1);
+            int b = image.getPixel(x, y, 2);
+
+            int gray = (r + g + b) / 3;
+
+            image.setPixel(x, y, 0, 255);
+            image.setPixel(x, y, 1, gray);
+            image.setPixel(x, y, 2, gray);
+        }
+    }
+}
+
 int main()
 {
     return 0;
