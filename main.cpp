@@ -8,23 +8,38 @@ void Enter_Colors_Values(int &Red, int &Green, int &Blue)
 {
     cout << "Enter value of Red from 0 to 255 : ";
     cin >> Red;
-    while (Red < 0 || Red > 255)
+    while (Red < 0 || Red > 255 || cin.fail())
     {
+        if (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
         cout << "Enter value of Red from 0 to 255 : ";
         cin >> Red;
     }
     cout << "\nEnter value of Green from 0 to 255 : ";
     cin >> Green;
-    while (Green < 0 || Green > 255)
+    while (Green < 0 || Green > 255 || cin.fail())
     {
+        if (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
         cout << "\nEnter value of Green from 0 to 255 : ";
         cin >> Green;
     }
 
     cout << "\nEnter value of Blue from 0 to 255 : ";
     cin >> Blue;
-    while (Blue < 0 || Blue > 255)
+    while (Blue < 0 || Blue > 255 || cin.fail())
     {
+        if (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
         cout << "\nEnter value of Blue from 0 to 255 : ";
         cin >> Blue;
     }
@@ -34,8 +49,13 @@ int Enter_New_Thickness(int &Thickness)
 {
     cout << "Enter the thickness of Frame : ";
     cin >> Thickness;
-    while (Thickness <= 0 || Thickness > 500)
+    while (Thickness <= 0 || Thickness > 500 || cin.fail())
     {
+        if (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
         cout << "Enter the thickness of Frame : ";
         cin >> Thickness;
     }
@@ -89,16 +109,26 @@ void EnterNewSize(int &NewHeight, int &NewWidth)
 {
     cout << "Enter new height: ";
     cin >> NewHeight;
-    while (NewHeight <= 0)
+    while (NewHeight <= 0 || cin.fail())
     {
+        if (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
         cout << "Enter new height: ";
         cin >> NewHeight;
     }
     cout << "Enter new width: ";
     cin >> NewWidth;
 
-    while (NewWidth <= 0)
+    while (NewWidth <= 0 || cin.fail())
     {
+        if (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
         cout << "Enter new width: ";
         cin >> NewWidth;
     }
@@ -181,16 +211,15 @@ void BlurImage(Image& image, Image& image2)
     cin >> level;
 
     while (level != 1 && level != 2 && level != 3)
-{
-    if (cin.fail())
     {
-        cin.clear();
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        if (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+        cout << "Invalid Level! Enter Level Again: ";
+        cin >> level;
     }
-
-    cout << "Invalid Level! Enter Level Again: ";
-    cin >> level;
-}
 
     if (level == 1)
     {
@@ -209,3 +238,4 @@ int main()
 {
     return 0;
 }
+
