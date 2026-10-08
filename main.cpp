@@ -1,7 +1,6 @@
 #include <iostream>
 #include <string>
 #include "Image_Class.h"
-
 using namespace std;
 //=======================Filter4======================//
 void Enter_Colors_Values(int &Red, int &Green, int &Blue)
