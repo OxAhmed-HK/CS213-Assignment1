@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include <string>
 #include <fstream>
 #include "Image_Class.h"
@@ -25,7 +26,7 @@ void Grayscale(Image &image)
     }
 }
 
-// ==================== FILTER 2 ===================== //
+// ==================== FILTER 5 ===================== //
 
 void Flip(Image &image, string direction)
 {
@@ -107,6 +108,74 @@ void black_white(Image &image)
     }
 }
 
+// ==================== FILTER 9 ===================== //
+
+Image merge(Image &image1, Image &image2)
+{
+    int newWidth = min(image1.width, image2.width);
+    int newHeight = min(image1.height, image2.height);
+    Image result(newWidth, newHeight);
+
+    for (int x = 0; x < newWidth; x++)
+    {
+        for (int y = 0; y < newHeight; y++)
+        {
+            int r1 = image1(x, y, 0);
+            int g1 = image1(x, y, 1);
+            int b1 = image1(x, y, 2);
+            //===============//
+            int r2 = image2(x, y, 0);
+            int g2 = image2(x, y, 1);
+            int b2 = image2(x, y, 2);
+            // Calculate the average colors
+            int new_r = (r1 + r2) / 2;
+            int new_g = (g1 + g2) / 2;
+            int new_b = (b1 + b2) / 2;
+            // Set the output pixel
+            result(x, y, 0) = new_r;
+            result(x, y, 1) = new_g;
+            result(x, y, 2) = new_b;
+        }
+    }
+    return result;
+}
+
+// ==================== FILTER 13 ===================== //
+
+void Wano_Sunlight(Image &image)
+{
+    for (int x = 0; x < image.width; x++)
+    {
+        for (int y = 0; y < image.height; y++)
+        {
+            int r = image(x, y, 0);
+            int g = image(x, y, 1);
+            int b = image(x, y, 2);
+
+            int new_r = r + 50;
+            int new_g = g + 50;
+            int new_b = b + 50;
+
+            if (new_r > 255)
+            {
+                new_r = 255;
+            }
+            if (new_g > 255)
+            {
+                new_g = 255;
+            }
+            if (new_b > 255)
+            {
+                new_b = 255;
+            }
+
+            image(x, y, 0) = new_r;
+            image(x, y, 1) = new_g;
+            image(x, y, 2) = new_b;
+        }
+    }
+}
+
 bool checkExtension(string filename)
 {
     if ((filename.length() >= 4 &&
@@ -178,9 +247,10 @@ void menu(Image &image)
         cout << "6. [Teammate Filter 4]\n";
         cout << "7. [Teammate Filter 5]\n";
         cout << "8. [Teammate Filter 6]\n";
-        cout << "9. [Teammate Filter 7]\n";
+        cout << "9. merge\n";
         cout << "10. Save Image\n";
         cout << "11. Load New Image\n";
+        cout << "13. Wano_Sunlight\n";
         cout << "0. Exit\n";
 
         cout << "Enter your choice: ";
@@ -239,6 +309,16 @@ void menu(Image &image)
                 cout << "Image saved successfully.\n";
             }
         }
+        //===============================merge ========================//
+
+        else if (choice == 9)
+        {
+            string filename;
+            cout << "Enter the second image filename: ";
+            cin >> filename;
+            Image image2(filename);
+            image = merge(image, image2);
+        }
         // ==================== LOAD NEW IMAGE ==================== //
         else if (choice == 11)
         {
@@ -284,7 +364,12 @@ void menu(Image &image)
 
             cout << "New image loaded successfully.\n";
         }
+        // ==================== Wano_Sunlight ==================== //
 
+        else if (choice == 13)
+        {
+            Wano_Sunlight(image);
+        }
         // ==================== EXIT ==================== //
 
         else if (choice == 0)
