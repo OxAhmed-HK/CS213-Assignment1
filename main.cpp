@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Image_Class.h"
+#include <cmath>
 using namespace std;
 //filter 2//
 void black_white(Image& image)
@@ -38,7 +39,7 @@ void rotate_image(Image& image, int angle)
 	if (angle==90)
 	{	
 		Image rotated_image(image.height, image.width);	
-				for (int x = 0; x < image.width; x++)
+		for (int x = 0; x < image.width; x++)
 		{
 			for (int y = 0; y < image.height; y++)
 			{
@@ -83,7 +84,83 @@ void rotate_image(Image& image, int angle)
 		
 }
 
+//filter 10//
+void edge_detection(Image& image)
+{
+	Image gray_image(image.width, image.height);
+	for (int x = 0; x < image.width; x++)
+	{
+		for (int y = 0; y < image.height; y++)
+		{
+			int average = ( image(x, y, 0) + image(x, y, 1) + image(x, y, 2) ) / 3;
+			for (int i = 0; i < 3; i++)
+			{
+				gray_image(x, y, i) = average;
+			}
+		}
+	}
+	
+	Image final_image(image.width, image.height);
+	for (int x = 0; x < image.width; x++)
+	{
+		for (int y = 0; y < image.height; y++)
+		{
+			int difference = 0;
+			int max_difference= 0;
+			if (x<image.width-1)
+			{
+				difference = abs(gray_image(x, y, 0) - gray_image(x+1, y, 0)) ;
+			}
+			if (difference > max_difference)
+			{
+				max_difference = difference;
+			}
+			if (x>0)
+			{
+				difference = abs(gray_image(x, y, 0) - gray_image(x-1, y, 0)) ;
+			}
+			if (difference > max_difference)
+			{
+				max_difference = difference;
+			}	
+			if (y<image.height-1)
+			{
+				difference = abs(gray_image(x, y, 0) - gray_image(x, y+1, 0)) ;
+			}	
+			if (difference > max_difference)
+			{
+				max_difference = difference;
+			}
+			if (y>0)
+			{
+				difference = abs(gray_image(x, y, 0) - gray_image(x, y-1, 0)) ;
+			}
+			if (difference > max_difference)
+			{
+				max_difference = difference;
+			}
+			if (max_difference > 30)
+			{
+				for (int i = 0; i < 3; i++)
+				{
+					final_image(x, y, i) = 0;
+				}
+			}else
+			{
+				for (int i = 0; i < 3; i++)
+				{
+					final_image(x, y, i) = 255;
+				}
+			}
+			
+		}
+
+	}
+	image = final_image;
+}
+
 int main()
 {
-	
-}  
+
+}
+
