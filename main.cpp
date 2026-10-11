@@ -1,5 +1,6 @@
 #include <iostream>
 #include <algorithm>
+#include <cmath>
 #include <string>
 #include <fstream>
 #include "Image_Class.h"
@@ -176,6 +177,41 @@ void Wano_Sunlight(Image &image)
     }
 }
 
+// ==================== FILTER 17 ===================== //
+
+void ImageSkewing(Image &image)
+{
+    double angle;
+    cout << "Enter the skew angle in degrees : ";
+    cin >> angle;
+    double radian = angle * ((3.14) / 180.0);
+    double skewFactor = tan(radian);
+
+    int extraWidth = ceil(abs(image.height * skewFactor));
+    int newWidth = image.width + extraWidth;
+    int newHeight = image.height;
+    Image result(newWidth, newHeight);
+
+    for (int x = 0; x < image.width; x++)
+    {
+        for (int y = 0; y < image.height; y++)
+        {
+            int shift = y * skewFactor;
+            int newx = x + shift;
+            int newy = y;
+
+            // بنتأكد إن البكسل مش هيخرج خارج الصورة الجديدة قبل ما نكتب فيه
+            if (newx >= 0 && newx < newWidth && newy >= 0 && newy < newHeight)
+            {
+                result(newx, newy, 0) = image(x, y, 0);
+                result(newx, newy, 1) = image(x, y, 1);
+                result(newx, newy, 2) = image(x, y, 2);
+            }
+        }
+    }
+    image = result;
+}
+
 bool checkExtension(string filename)
 {
     if ((filename.length() >= 4 &&
@@ -251,6 +287,7 @@ void menu(Image &image)
         cout << "10. Save Image\n";
         cout << "11. Load New Image\n";
         cout << "13. Wano_Sunlight\n";
+        cout << "17. ImageSkewing\n";
         cout << "0. Exit\n";
 
         cout << "Enter your choice: ";
@@ -369,6 +406,13 @@ void menu(Image &image)
         else if (choice == 13)
         {
             Wano_Sunlight(image);
+        }
+
+        // ==================== ImageSkewing ==================== //
+
+        else if (choice == 17)
+        {
+            ImageSkewing(image);
         }
         // ==================== EXIT ==================== //
 
