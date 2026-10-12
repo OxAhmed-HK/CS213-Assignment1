@@ -73,6 +73,24 @@ void Calculate_NewHeight_NewWidth(int &Thickness, int &NewHeight, int &NewWidth,
 Image FrameFilter(Image &image)
 {
     int NewWidth, NewHeight, Thickness;
+    int FrameType;
+
+    cout << "Choose Frame Type:\n";
+    cout << "1. Simple Frame\n";
+    cout << "2. Fancy Frame\n";
+    cout << "Enter your choice: ";
+    cin >> FrameType;
+
+    while (FrameType != 1 && FrameType != 2)
+    {
+        if (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+        cout << "Invalid choice. Enter 1 for Simple or 2 for Decorated: ";
+        cin >> FrameType;
+    }
 
     Enter_New_Thickness(Thickness);
 
@@ -80,9 +98,21 @@ Image FrameFilter(Image &image)
 
     Image image2(NewWidth, NewHeight);
 
-    int Red, Green, Blue;
+    int Red1, Green1, Blue1;
+    int Red2, Green2, Blue2;
 
-    Enter_Colors_Values(Red, Green, Blue);
+    if (FrameType == 1)
+    {
+        Enter_Colors_Values(Red1, Green1, Blue1);
+    }
+    else
+    {
+        cout << "\nEnter the first color:\n";
+        Enter_Colors_Values(Red1, Green1, Blue1);
+
+        cout << "\nEnter the second color:\n";
+        Enter_Colors_Values(Red2, Green2, Blue2);
+    }
 
     for (int x = 0; x < image2.width; x++)
     {
@@ -91,9 +121,27 @@ Image FrameFilter(Image &image)
             if (x >= 0 && x < Thickness || x >= image2.width - Thickness && x < image2.width ||
                 y >= 0 && y < Thickness || y >= image2.height - Thickness && y < image2.height)
             {
-                image2.setPixel(x, y, 0, Red);
-                image2.setPixel(x, y, 1, Green);
-                image2.setPixel(x, y, 2, Blue);
+                if (FrameType == 1)
+                {
+                    image2.setPixel(x, y, 0, Red1);
+                    image2.setPixel(x, y, 1, Green1);
+                    image2.setPixel(x, y, 2, Blue1);
+                }
+                else
+                {
+                    if ((x + y) % 2 == 0)
+                    {
+                        image2.setPixel(x, y, 0, Red2);
+                        image2.setPixel(x, y, 1, Green2);
+                        image2.setPixel(x, y, 2, Blue2);
+                    }
+                    else
+                    {
+                        image2.setPixel(x, y, 0, Red1);
+                        image2.setPixel(x, y, 1, Green1);
+                        image2.setPixel(x, y, 2, Blue1);
+                    }
+                }
             }
             else
             {
@@ -103,6 +151,7 @@ Image FrameFilter(Image &image)
             }
         }
     }
+
     return image2;
 }
 //=======================Filter8======================//
@@ -373,7 +422,7 @@ void menu(Image &image)
         {
             cout << "Current image: " << image.width << " x " << image.height;
             cout << (unsaved ? "  (unsaved changes)" : "  (saved)") << "\n";
-            cout << "4. Add Frame\n";
+            cout << "4. Add Frame (Simple / Fancy)\n";
             cout << "8. Resize\n";
             cout << "9. Save Image\n";
             cout << "12. Blur\n";
