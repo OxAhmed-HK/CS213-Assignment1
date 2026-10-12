@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <fstream>
 #include <limits>
 #include "Image_Class.h"
 using namespace std;
@@ -253,8 +254,212 @@ void Infrared(Image &image)
         }
     }
 }
-int main()
+
+//=======================Menu======================//
+bool checkExtension(string filename)
 {
-    return 0;
+    int n = filename.length();
+    if (n < 4)
+        return false;
+
+    string ext4 = filename.substr(n - 4);
+    string ext5 = (n >= 5) ? filename.substr(n - 5) : "";
+
+    return ext4 == ".jpg" || ext4 == ".png" || ext4 == ".bmp" || ext5 == ".jpeg" ||
+           ext4 == ".JPG" || ext4 == ".PNG" || ext4 == ".BMP" || ext5 == ".JPEG";
 }
 
+bool fileExists(string filename)
+{
+    ifstream file(filename);
+    return file.good();
+}
+
+bool saveWithCheck(Image &image, string &currentFile)
+{
+    int option;
+    cout << "\nSave Options:\n";
+    cout << "1. Save on the same file (" << currentFile << ")\n";
+    cout << "2. Save as a new file\n";
+    cout << "Enter your choice: ";
+    cin >> option;
+
+    while (option != 1 && option != 2)
+    {
+        if (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+        cout << "Invalid choice! Enter 1 or 2: ";
+        cin >> option;
+    }
+
+    string saveName;
+
+    if (option == 1)
+    {
+        saveName = currentFile;
+    }
+    else
+    {
+        cout << "Enter new filename (with extension): ";
+        cin >> saveName;
+
+        if (!checkExtension(saveName))
+        {
+            cout << "Invalid file extension.\n";
+            return false;
+        }
+    }
+
+    image.saveImage(saveName);
+    currentFile = saveName;
+    cout << "\n>> Image saved as " << saveName << "\n";
+    return true;
+}
+
+bool loadNewImage(Image &image, bool imageLoaded, bool &unsaved, string &currentFile)
+{
+    if (imageLoaded)
+    {
+        char saveCurrent;
+        cout << "Do you want to save the current image before loading a new one? (y/n): ";
+        cin >> saveCurrent;
+
+        if (saveCurrent == 'y' || saveCurrent == 'Y')
+        {
+            saveWithCheck(image, currentFile);
+        }
+    }
+
+    string newFilename;
+    cout << "Enter image filename: ";
+    cin >> newFilename;
+
+    if (!checkExtension(newFilename))
+    {
+        cout << "Invalid file extension.\n";
+        return imageLoaded;
+    }
+    if (!fileExists(newFilename))
+    {
+        cout << "File does not exist.\n";
+        return imageLoaded;
+    }
+
+    image = Image(newFilename);
+    currentFile = newFilename;
+    unsaved = false;
+    cout << "\n>> Image loaded: " << newFilename << "\n";
+    return true;
+}
+
+void menu(Image &image)
+{
+    int choice;
+    bool imageLoaded = false;
+    bool unsaved = false;
+    string currentFile;
+
+    do
+    {
+        cout << "\n========== IMAGE PROCESSING MENU ==========\n";
+        if (!imageLoaded)
+        {
+            cout << "No image loaded yet.\n";
+        }
+        else
+        {
+            cout << "Current image: " << image.width << " x " << image.height;
+            cout << (unsaved ? "  (unsaved changes)" : "  (saved)") << "\n";
+            cout << "4. Add Frame\n";
+            cout << "8. Resize\n";
+            cout << "9. Save Image\n";
+            cout << "12. Blur\n";
+            cout << "16. Infrared\n";
+        }
+        cout << "10. Load Image\n";
+        cout << "0. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        if (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            choice = -1;
+        }
+
+        if (choice == 10)
+        {
+            imageLoaded = loadNewImage(image, imageLoaded, unsaved, currentFile);
+        }
+        else if (choice == 0)
+        {
+            if (imageLoaded)
+            {
+                char saveCurrent;
+                cout << "Do you want to save the current image before exiting? (y/n): ";
+                cin >> saveCurrent;
+
+                if (saveCurrent == 'y' || saveCurrent == 'Y')
+                {
+                    saveWithCheck(image, currentFile);
+                }
+            }
+            cout << "Exiting...\n";
+        }
+        else if (!imageLoaded && (choice == 4 || choice == 8 || choice == 9 || choice == 12 || choice == 16))
+        {
+            cout << "Please load an image first (option 10).\n";
+        }
+        else if (choice == 4)
+        {
+            image = FrameFilter(image);
+            unsaved = true;
+            cout << "\n>> Frame filter applied.\n";
+        }
+        else if (choice == 8)
+        {
+            image = ResizeFilter(image);
+            unsaved = true;
+            cout << "\n>> Resize filter applied.\n";
+        }
+        else if (choice == 9)
+        {
+            if (saveWithCheck(image, currentFile))
+            {
+                unsaved = false;
+            }
+        }
+        else if (choice == 12)
+        {
+            Image blurred(image.width, image.height);
+            BlurImage(image, blurred);
+            image = blurred;
+            unsaved = true;
+            cout << "\n>> Blur filter applied.\n";
+        }
+        else if (choice == 16)
+        {
+            Infrared(image);
+            unsaved = true;
+            cout << "\n>> Infrared filter applied.\n";
+        }
+        else
+        {
+            cout << "Invalid choice.\n";
+        }
+
+    } while (choice != 0);
+}
+
+int main()
+{
+    Image image;
+
+    menu(image);
+
+    return 0;
+}
